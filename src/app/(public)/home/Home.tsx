@@ -4,6 +4,9 @@ import Navbar from 'react-bootstrap/Navbar';
 import Card from 'react-bootstrap/Card';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import { Button } from 'react-bootstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faGoogle } from '@fortawesome/free-brands-svg-icons';
 
 function Home() {
     return (
@@ -17,7 +20,9 @@ function Home() {
                             <Navbar.Toggle />
                             <Navbar.Collapse className='justify-content-end'>
                                 <Navbar.Text>
-                                    <a href='/login'>Entrar</a>
+                                    <p className='fs-5'>Entre com <Button variant='outline-primary'><FontAwesomeIcon icon={faGoogle} />
+                                        </Button>
+                                    </p>
                                 </Navbar.Text>
                             </Navbar.Collapse>
                         </Container>
