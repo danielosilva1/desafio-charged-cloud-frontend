@@ -12,7 +12,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     const [showHeader, setShowHeader] = useState(true);
 
     useEffect(() => {
-        console.log(location);
         if (location.pathname === '/') {
             setShowHeader(false);
         } else {

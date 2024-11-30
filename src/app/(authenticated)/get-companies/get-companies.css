@@ -1,0 +1,9 @@
+.pageTitle {
+    text-align: center;
+}
+
+.getForm .form {
+    border: solid #d5e7d5;
+    padding: 4%;
+    border-radius: 10px;
+}

@@ -6,6 +6,7 @@ import CreateCompany from './app/(authenticated)/register-company/RegisterCompan
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Layout from './Layout';
 import Header from './app/components/header/Header';
+import GetCompanies from './app/(authenticated)/get-companies/GetCompanies';
 
 const App: React.FC = () => {
 	return (
@@ -18,6 +19,7 @@ const App: React.FC = () => {
 				<Route path='/' element={<Home />}></Route>
 				<Route path='/control-panel' element={<ControlPanel />}></Route>
 				<Route path='/register-company' element={<CreateCompany />}></Route>
+				<Route path='/get-companies' element={<GetCompanies />}></Route>
 			</Routes>
 		</BrowserRouter>
 		</>

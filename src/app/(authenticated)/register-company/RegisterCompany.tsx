@@ -3,17 +3,11 @@ import React, { useState } from 'react';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
-
-interface RegisterCompanyForm {
-    cnpj: string,
-    name: string,
-    phoneNumber: string,
-    address: string
-}
+import { CompanyData } from '../../../utils/interfaces';
 
 function RegisterCompany() {
     const [validated, setValidated] = useState(false);
-    const [companyData, setCompanyData] = useState<RegisterCompanyForm>({
+    const [companyData, setCompanyData] = useState<CompanyData>({
         cnpj: '',
         name: '',
         phoneNumber: '',
@@ -119,20 +113,19 @@ function RegisterCompany() {
                             />
                             <Form.Control.Feedback type='invalid'>Informe o telefone</Form.Control.Feedback>
                         </Form.Group>
-                        <Form.Group as={Col} md="8" controlId="validationCustom04" className="d-flex align-items-end">
-                            <div className="flex-grow-1">
+                        <Form.Group as={Col} md='7' controlId='validationCustom04'>
                                 <Form.Label>Endereço*</Form.Label>
-                                <Form.Select aria-label="Default select example" required name="address" onChange={handleSelectChange}>
+                                <Form.Select aria-label='Default select example' required name='address' onChange={handleSelectChange}>
                                     <option></option>
-                                    <option value="1">One</option>
-                                    <option value="2">Two</option>
-                                    <option value="3">Three</option>
+                                    <option value='1'>One</option>
+                                    <option value='2'>Two</option>
+                                    <option value='3'>Three</option>
                                 </Form.Select>
-                                <Form.Control.Feedback type="invalid">Informe o endereço</Form.Control.Feedback>
-                            </div>
-                            <Button variant="primary" className="mb-1 ms-2">+</Button>
+                                <Form.Control.Feedback type='invalid'>Informe o endereço</Form.Control.Feedback>
                         </Form.Group>
-
+                        <Form.Group as={Col} md='1' className='d-flex align-items-end'>
+                            <Button variant='primary' className='mb-1 ms-2'>+</Button>
+                        </Form.Group>
                     </Row>
                     <div className='buttonsArea'>
                         <Button variant='outline-warning' onClick={handleCancel} className='button'>Cancelar</Button>
