@@ -8,7 +8,7 @@ function ControlPanel() {
                 <Row className='flex-grow-1 d-flex justify-content-center text-center align-items-center'>
                     {/* Linhas para os cards */}
                     <Col sm={3} className='d-flex justify-content-center'>
-                        <a href='/create-company' className='panelCard'>
+                        <a href='/register-company' className='panelCard'>
                             <Card style={{ width: '18rem' }}>
                                 <Card.Img variant='top' src='../../../public/create.jpg' />
                                 <Card.Body>

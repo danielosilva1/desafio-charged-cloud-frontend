@@ -2,6 +2,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import Home from './app/(public)/home/Home';
 import ControlPanel from './app/(authenticated)/control-panel/ControlPanel';
+import CreateCompany from './app/(authenticated)/register-company/RegisterCompany';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Layout from './Layout';
 import Header from './app/components/header/Header';
@@ -16,6 +17,7 @@ const App: React.FC = () => {
 			<Routes>
 				<Route path='/' element={<Home />}></Route>
 				<Route path='/control-panel' element={<ControlPanel />}></Route>
+				<Route path='/register-company' element={<CreateCompany />}></Route>
 			</Routes>
 		</BrowserRouter>
 		</>
