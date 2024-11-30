@@ -1,0 +1,17 @@
+.pageTitle {
+    text-align: center;
+}
+
+.registerAddressForm .form {
+    border: solid #d5e7d5;
+    padding: 4%;
+    border-radius: 10px;
+}
+
+.registerAddressForm .form .button {
+    margin-left: 5vw;
+}
+
+.buttonsArea {
+    text-align: center;
+}

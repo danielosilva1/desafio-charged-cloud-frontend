@@ -8,6 +8,7 @@ import { CompanyData } from '../../../utils/interfaces';
 function RegisterCompany() {
     const [validated, setValidated] = useState(false);
     const [companyData, setCompanyData] = useState<CompanyData>({
+        id: 0,
         cnpj: '',
         name: '',
         phoneNumber: '',

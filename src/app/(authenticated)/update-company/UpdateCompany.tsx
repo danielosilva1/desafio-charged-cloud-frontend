@@ -112,7 +112,6 @@ function UpdateCompany() {
                                     <option value='2'>CNPJ 2</option>
                                     <option value='3'>CNPJ 3</option>
                                 </Form.Select>
-                                <Form.Control.Feedback type='invalid'>Informe o endereço</Form.Control.Feedback>
                             </Form.Group>
                             <Form.Group as={Col} md='2' className='d-flex align-items-end'>
                                 <Button variant='outline-primary' className='mb-1 ms-2' onClick={handleGetCompany}>Buscar</Button>

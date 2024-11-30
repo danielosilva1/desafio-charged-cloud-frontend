@@ -8,6 +8,7 @@ import Layout from './Layout';
 import Header from './app/components/header/Header';
 import GetCompanies from './app/(authenticated)/get-companies/GetCompanies';
 import UpdateCompany from './app/(authenticated)/update-company/UpdateCompany';
+import RegisterAddress from './app/(authenticated)/register-address/RegisterAddress';
 
 const App: React.FC = () => {
 	return (
@@ -22,6 +23,7 @@ const App: React.FC = () => {
 					<Route path='/register-company' element={<CreateCompany />}></Route>
 					<Route path='/get-companies' element={<GetCompanies />}></Route>
 					<Route path='/update-company' element={<UpdateCompany />}></Route>
+					<Route path='/register-address' element={<RegisterAddress />}></Route>
 				</Routes>
 			</BrowserRouter>
 		</>
