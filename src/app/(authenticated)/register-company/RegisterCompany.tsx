@@ -1,11 +1,14 @@
 import './register-company.css';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
-import { CompanyData } from '../../../utils/interfaces';
+import { CompanyAddressData, CompanyData, CustomError } from '../../../utils/interfaces';
+import { axios } from '../../../config/axios';
+import { AxiosError } from 'axios';
 
 function RegisterCompany() {
+    const navigate = useNavigate(); // Navegação entre telas
     const [validated, setValidated] = useState(false);
     const [companyData, setCompanyData] = useState<CompanyData>({
         id: 0,
@@ -14,7 +17,7 @@ function RegisterCompany() {
         phoneNumber: '',
         address: ''
     });
-    const navigate = useNavigate(); // Navegação entre telas
+    const [addresses, setAddresses] = useState<CompanyAddressData[]>([]);
 
     // Trata mudanças nas caixas de input
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -73,6 +76,19 @@ function RegisterCompany() {
             }
         });
     }
+
+    useEffect(() => {
+        // Carrega todos os endereços cadastrados
+        axios.get('/address/get-all')
+        .then((response) => {
+            if (response.status == 200) {
+                setAddresses(response.data);
+            }
+        }).catch((error: AxiosError) => {
+            const err = error.response?.data as CustomError;
+            console.error(err.msg);
+        });
+    }, []);
     return (
         <div className='row justify-content-center align-items-center'>
             <div className='mt-3 mt-md-5 mt-lg-7'>
@@ -81,7 +97,7 @@ function RegisterCompany() {
             <div className='col-md-6 mt-3 mt-md-5 mt-lg-7 createForm'>
                 <Form className='form' noValidate validated={validated} onSubmit={handleSubmit}>
                     <Row className='mb-3'>
-                        <Form.Group as={Col} md='4' controlId='validationCustom01'>
+                        <Form.Group as={Col} md='3' controlId='validationCustom01'>
                             <Form.Label>CNPJ*</Form.Label>
                             <Form.Control
                                 required
@@ -92,7 +108,7 @@ function RegisterCompany() {
                             />
                             <Form.Control.Feedback type='invalid'>Informe o CNPJ</Form.Control.Feedback>
                         </Form.Group>
-                        <Form.Group as={Col} md='8' controlId='validationCustom02'>
+                        <Form.Group as={Col} md='6' controlId='validationCustom02'>
                             <Form.Label>Nome*</Form.Label>
                             <Form.Control
                                 required
@@ -103,7 +119,7 @@ function RegisterCompany() {
                             />
                             <Form.Control.Feedback type='invalid'>Informe o nome</Form.Control.Feedback>
                         </Form.Group>
-                        <Form.Group as={Col} md='4' controlId='validationCustom03'>
+                        <Form.Group as={Col} md='3' controlId='validationCustom03'>
                             <Form.Label>Telefone*</Form.Label>
                             <Form.Control
                                 required
@@ -114,13 +130,15 @@ function RegisterCompany() {
                             />
                             <Form.Control.Feedback type='invalid'>Informe o telefone</Form.Control.Feedback>
                         </Form.Group>
-                        <Form.Group as={Col} md='7' controlId='validationCustom04'>
+                        <Form.Group as={Col} md='11' controlId='validationCustom04'>
                                 <Form.Label>Endereço*</Form.Label>
                                 <Form.Select aria-label='Default select example' required name='address' onChange={handleSelectChange}>
-                                    <option></option>
-                                    <option value='1'>One</option>
-                                    <option value='2'>Two</option>
-                                    <option value='3'>Three</option>
+                                    <option selected></option>
+                                    {
+                                        addresses.map((item: CompanyAddressData) => (
+                                            <option key={item.id} value={item.id}>{`${item.street}, ${item.number}, ${item.additionalInfo}, ${item.neighborhood}, ${item.city}, ${item.state}`}</option>
+                                        ))
+                                    }
                                 </Form.Select>
                                 <Form.Control.Feedback type='invalid'>Informe o endereço</Form.Control.Feedback>
                         </Form.Group>

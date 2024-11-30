@@ -7,8 +7,14 @@ import Col from 'react-bootstrap/Col';
 import { Button } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGoogle } from '@fortawesome/free-brands-svg-icons';
+import { axios } from '../../../config/axios';
 
 function Home() {
+    const handleLogin = () => {
+        // TODO
+        console.log(`Enviar requisição para ${axios.defaults.baseURL}/auth/google/login`,
+        );
+    }
     return (
         <Container fluid='true' className='vh-100 d-flex flex-column'>
             {/* Linha do Header */}
@@ -20,7 +26,7 @@ function Home() {
                             <Navbar.Toggle />
                             <Navbar.Collapse className='justify-content-end'>
                                 <Navbar.Text>
-                                    <p className='fs-5'>Entre com <Button variant='outline-primary'><FontAwesomeIcon icon={faGoogle} />
+                                    <p className='fs-5'>Entre com <Button variant='outline-primary'><FontAwesomeIcon icon={faGoogle} onClick={handleLogin}/>
                                         </Button>
                                     </p>
                                 </Navbar.Text>

@@ -35,3 +35,7 @@ export interface AddressData {
     city: string,
     state: string
 }
+
+export interface CustomError {
+    msg: string
+}
