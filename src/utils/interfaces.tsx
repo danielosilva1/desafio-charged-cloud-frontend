@@ -1,4 +1,5 @@
 export interface CompanyData {
+    id: number,
     cnpj: string,
     name: string,
     phoneNumber: string,
@@ -6,6 +7,7 @@ export interface CompanyData {
 }
 
 export interface CompanyAddressData {
+    id: number,
     cnpj: string,
     name: string,
     phoneNumber: string,

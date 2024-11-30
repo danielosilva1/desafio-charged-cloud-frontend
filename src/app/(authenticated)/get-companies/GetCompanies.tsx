@@ -10,6 +10,7 @@ function GetCompanies() {
     });
     const [filteredCompanies, setFilteredCompanies] = useState<CompanyAddressData[]>([
         {
+            id: 0,
             cnpj: '',
             name: '',
             phoneNumber: '',
