@@ -10,7 +10,7 @@ const Header : React.FC = () => {
     return (
         <Navbar className='bg-body-tertiary'>
             <Container>
-                <Navbar.Brand href='/panel'>Desafio Charged</Navbar.Brand>
+                <Navbar.Brand href='/control-panel'>Desafio Charged</Navbar.Brand>
                 <Navbar.Toggle />
                 <Navbar.Collapse className='justify-content-end'>
                     <Navbar.Text>

@@ -1,0 +1,12 @@
+html, body { 
+    height: 100%;
+    overflow-x: hidden;
+}
+
+.panelCard {
+    text-decoration: none;
+}
+
+.panelCard .card:hover {
+    background-color: #d5e7d5;
+}

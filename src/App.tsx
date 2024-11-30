@@ -15,7 +15,7 @@ const App: React.FC = () => {
 			</Layout>
 			<Routes>
 				<Route path='/' element={<Home />}></Route>
-				<Route path='/panel' element={<ControlPanel />}></Route>
+				<Route path='/control-panel' element={<ControlPanel />}></Route>
 			</Routes>
 		</BrowserRouter>
 		</>
