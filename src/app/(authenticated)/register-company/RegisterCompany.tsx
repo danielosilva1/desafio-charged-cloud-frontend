@@ -7,6 +7,8 @@ import { CompanyAddressData, CompanyData, CustomError } from '../../../utils/int
 import { axios } from '../../../config/axios';
 import { AxiosError } from 'axios';
 import InputMask from 'react-input-mask';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowsRotate, faPlus } from '@fortawesome/free-solid-svg-icons';
 
 function RegisterCompany() {
     const navigate = useNavigate(); // Navegação entre telas
@@ -39,6 +41,12 @@ function RegisterCompany() {
             [name]: value,
         }));
     };
+
+    const handleGoToAddAddress = () => {
+        // Abre tela de cadastro de endereço em outra aba
+        const url = '/register-address';
+        window.open(url, '_blank');
+    }
 
     const handleSubmit = (event: any) => {
         const form = event.currentTarget;
@@ -99,7 +107,7 @@ function RegisterCompany() {
         });
     }
 
-    useEffect(() => {
+    const handleGetAllAddresses = () => {
         // Carrega todos os endereços cadastrados e os adiciona à caixa de seleção do formulário
         axios.get('/address/get-all')
             .then((response) => {
@@ -110,6 +118,10 @@ function RegisterCompany() {
                 const err = error.response?.data as CustomError;
                 console.error(err.msg);
             });
+    }
+
+    useEffect(() => {
+        handleGetAllAddresses();
     }, []);
     return (
         <div className='row justify-content-center align-items-center'>
@@ -159,7 +171,7 @@ function RegisterCompany() {
                             />
                             <Form.Control.Feedback type='invalid'>Informe o telefone</Form.Control.Feedback>
                         </Form.Group>
-                        <Form.Group as={Col} md='11' controlId='validationCustom04'>
+                        <Form.Group as={Col} md='10' controlId='validationCustom04'>
                             <Form.Label>Endereço*</Form.Label>
                             <Form.Select aria-label='Default select example' value={Number(companyData.addressId)} required name='addressId' onChange={handleSelectChange}>
                                 <option></option>
@@ -172,7 +184,10 @@ function RegisterCompany() {
                             <Form.Control.Feedback type='invalid'>Informe o endereço</Form.Control.Feedback>
                         </Form.Group>
                         <Form.Group as={Col} md='1' className='d-flex align-items-end'>
-                            <Button variant='primary' className='mb-1 ms-2'>+</Button>
+                            <Button variant='outline-primary' className='mb-1 ms-2' onClick={handleGoToAddAddress}><FontAwesomeIcon icon={faPlus} /></Button>
+                        </Form.Group>
+                        <Form.Group as={Col} md='1' className='d-flex align-items-end'>
+                            <Button variant='outline-info' className='mb-1 ms-2' onClick={handleGetAllAddresses}><FontAwesomeIcon icon={faArrowsRotate} /></Button>
                         </Form.Group>
                     </Row>
                     <div className='buttonsArea'>
