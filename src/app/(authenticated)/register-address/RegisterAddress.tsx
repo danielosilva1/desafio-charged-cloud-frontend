@@ -193,6 +193,16 @@ function RegisterAddress() {
                                         />
                                         <Form.Control.Feedback type='invalid'>Informe o número</Form.Control.Feedback>
                                     </Form.Group>
+                                    <Form.Group as={Col} md='4'>
+                                        <Form.Label>Complemento</Form.Label>
+                                        <Form.Control
+                                            type='text'
+                                            placeholder='Complemento'
+                                            name='additionalInfo'
+                                            onChange={handleInputChange}
+                                            value={address.additionalInfo}
+                                        />
+                                    </Form.Group>
                                     <Form.Group as={Col} md='4' controlId='validationCustom03'>
                                         <Form.Label>Bairro*</Form.Label>
                                         <Form.Control
@@ -204,16 +214,6 @@ function RegisterAddress() {
                                             value={address.neighborhood}
                                         />
                                         <Form.Control.Feedback type='invalid'>Informe o bairro</Form.Control.Feedback>
-                                    </Form.Group>
-                                    <Form.Group as={Col} md='4'>
-                                        <Form.Label>Complemento</Form.Label>
-                                        <Form.Control
-                                            type='text'
-                                            placeholder='Complemento'
-                                            name='additionalInfo'
-                                            onChange={handleInputChange}
-                                            value={address.additionalInfo}
-                                        />
                                     </Form.Group>
                                     <Form.Group as={Col} md='4' controlId='validationCustom04'>
                                         <Form.Label>Cidade*</Form.Label>

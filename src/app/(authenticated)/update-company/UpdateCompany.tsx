@@ -3,6 +3,9 @@ import React, { useState } from 'react';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import { CompanyData } from '../../../utils/interfaces';
 import Swal from 'sweetalert2';
+import InputMask from 'react-input-mask';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowsRotate, faPlus } from '@fortawesome/free-solid-svg-icons';
 
 function UpdateCompany() {
     const [validated, setValidated] = useState(false);
@@ -51,6 +54,16 @@ function UpdateCompany() {
         setShowUpdateArea(true);
     }
 
+    const handleGoToAddAddress = () => {
+        // Abre tela de cadastro de endereço em outra aba
+        const url = '/register-address';
+        window.open(url, '_blank');
+    }
+
+    const handleGetAllAddresses = () => {
+        console.log('Buscar todos os endereços')
+    }
+
     const handleCancel = () => {
         setShowUpdateArea(false);
     }
@@ -88,7 +101,7 @@ function UpdateCompany() {
             showCancelButton: true,
             cancelButtonText: 'Cancelar',
             confirmButtonText: 'Sim, estou!'
-        }).then(({value}) => {
+        }).then(({ value }) => {
             if (value == true) {
                 console.log(`Deletar a empresa com id ${companyData.id}`);
             }
@@ -101,7 +114,7 @@ function UpdateCompany() {
                 <div className='mt-3 mt-md-5 mt-lg-7'>
                     <h3 className='pageTitle'>Atualizar empresa</h3>
                 </div>
-                <div className='col-md-6 mt-3 mt-md-5 mt-lg-7 getForm'>
+                <div className='col-md-8 mt-3 mt-md-5 mt-lg-7 getForm'>
                     <Form className='form' noValidate>
                         <Row className='mb-3'>
                             <Form.Group as={Col} md='7'>
@@ -122,10 +135,24 @@ function UpdateCompany() {
             </div>
             {showUpdateArea &&
                 <div className='row justify-content-center align-items-center'>
-                    <div className='col-md-6 mt-3 mt-md-5 mt-lg-7 updateForm'>
+                    <div className='col-md-8 mt-3 mt-md-5 mt-lg-7 updateForm'>
                         <Form className='form' noValidate validated={validated} onSubmit={handleSubmit}>
                             <Row className='mb-3'>
-                                <Form.Group as={Col} md='8' controlId='validationCustom02'>
+                                <Form.Group as={Col} md='3' controlId='validationCustom01'>
+                                    <Form.Label>CNPJ*</Form.Label>
+                                    <Form.Control
+                                        required
+                                        type='text'
+                                        placeholder='CNPJ'
+                                        name='cnpj'
+                                        onChange={handleInputChange}
+                                        as={InputMask}
+                                        mask='99.999.999/0009-99'
+                                        value={companyData.cnpj}
+                                    />
+                                    <Form.Control.Feedback type='invalid'>Informe o CNPJ</Form.Control.Feedback>
+                                </Form.Group>
+                                <Form.Group as={Col} md='6' controlId='validationCustom02'>
                                     <Form.Label>Nome*</Form.Label>
                                     <Form.Control
                                         required
@@ -136,7 +163,7 @@ function UpdateCompany() {
                                     />
                                     <Form.Control.Feedback type='invalid'>Informe o nome</Form.Control.Feedback>
                                 </Form.Group>
-                                <Form.Group as={Col} md='4' controlId='validationCustom03'>
+                                <Form.Group as={Col} md='3' controlId='validationCustom03'>
                                     <Form.Label>Telefone*</Form.Label>
                                     <Form.Control
                                         required
@@ -144,10 +171,12 @@ function UpdateCompany() {
                                         placeholder='Telefone'
                                         name='phoneNumber'
                                         onChange={handleInputChange}
+                                        as={InputMask}
+                                        mask='(99) 99999-9999'
                                     />
                                     <Form.Control.Feedback type='invalid'>Informe o telefone</Form.Control.Feedback>
                                 </Form.Group>
-                                <Form.Group as={Col} md='7' controlId='validationCustom04'>
+                                <Form.Group as={Col} md='10' controlId='validationCustom04'>
                                     <Form.Label>Endereço*</Form.Label>
                                     <Form.Select aria-label='Default select example' required name='address' onChange={handleSelectChange}>
                                         <option></option>
@@ -158,7 +187,10 @@ function UpdateCompany() {
                                     <Form.Control.Feedback type='invalid'>Informe o endereço</Form.Control.Feedback>
                                 </Form.Group>
                                 <Form.Group as={Col} md='1' className='d-flex align-items-end'>
-                                    <Button variant='primary' className='mb-1 ms-2'>+</Button>
+                                    <Button variant='outline-primary' className='mb-1 ms-2' onClick={handleGoToAddAddress}><FontAwesomeIcon icon={faPlus} /></Button>
+                                </Form.Group>
+                                <Form.Group as={Col} md='1' className='d-flex align-items-end'>
+                                    <Button variant='outline-info' className='mb-1 ms-2' onClick={handleGetAllAddresses}><FontAwesomeIcon icon={faArrowsRotate} /></Button>
                                 </Form.Group>
                             </Row>
                             <div className='buttonsArea'>
