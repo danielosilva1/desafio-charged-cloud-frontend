@@ -4,13 +4,15 @@ import React, { useState } from 'react';
 import { AddressData } from '../../../utils/interfaces';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
+import ReactInputMask from 'react-input-mask';
+import axios from 'axios';
 
 function RegisterAddress() {
     const [validated, setValidated] = useState(false);
     const [cepParam, setCepParam] = useState('');
     const [showAddressArea, setShowAddressArea] = useState(false);
     const navigate = useNavigate();
-    const [address, setAddres] = useState<AddressData>({
+    const [address, setAddress] = useState<AddressData>({
         id: 0,
         cep: '',
         street: '',
@@ -29,15 +31,37 @@ function RegisterAddress() {
             setShowAddressArea(false);
         }
         // Atualiza as informações do endereço (do formulário de cadastro)
-        setAddres((prevState) => ({
+        setAddress((prevState) => ({
             ...prevState,
             [name]: value
         }));
     }
 
-    function handleGetAddres() {
-        console.log(`Buscar endereço com o CEP: ${cepParam}`);
-        setShowAddressArea(true);
+    function handleGetAddress() {
+        // Api do via cep espera apenas números: remove hífen
+        const cleanedCep = cepParam.replace('-', '');
+
+        axios.get(`https://viacep.com.br/ws/${cleanedCep}/json/`)
+        .then((response) => {
+            if (response.status == 200) {
+                const address = response.data;
+
+                setAddress({
+                    id: -1, // Endereço ainda não cadastrado
+                    cep: address.cep,
+                    street: address.logradouro,
+                    neighborhood: address.bairro,
+                    number: 0,
+                    additionalInfo: '',
+                    city: address.localidade,
+                    state: address.uf
+                });
+                setShowAddressArea(true);
+            }
+        }).catch((error) => {
+            setShowAddressArea(false);
+            console.error(error);
+        });
     }
 
     const handleSubmit = (event: any) => {
@@ -87,11 +111,11 @@ function RegisterAddress() {
                 <div className='mt-3 mt-md-5 mt-lg-7'>
                     <h3 className='pageTitle'>Adicionar endereço</h3>
                 </div>
-                <div className='col-md-6 mt-3 mt-md-5 mt-lg-7 registerAddressForm'>
+                <div className='col-md-8 mt-3 mt-md-5 mt-lg-7 registerAddressForm'>
                     <Form className='form'>
                         {/* Áre a de busca de endereço pelo CEP */}
                         <Row className='mb-3'>
-                            <Form.Group as={Col} md='8'>
+                            <Form.Group as={Col} md='3'>
                                 <Form.Label>CEP</Form.Label>
                                 <Form.Control
                                     required
@@ -99,10 +123,12 @@ function RegisterAddress() {
                                     placeholder='CEP'
                                     name='cep'
                                     onChange={handleInputChange}
+                                    as={ReactInputMask}
+                                    mask='99999-999'
                                 />
                             </Form.Group>
                             <Form.Group as={Col} md='2' className='d-flex align-items-end'>
-                                <Button variant='outline-primary' className='mb-1 ms-2' onClick={handleGetAddres}>Buscar</Button>
+                                <Button variant='outline-primary' className='mb-1 ms-2' onClick={handleGetAddress}>Buscar</Button>
                             </Form.Group>
                         </Row>
                     </Form>
@@ -119,6 +145,7 @@ function RegisterAddress() {
                                             placeholder='Rua'
                                             name='street'
                                             onChange={handleInputChange}
+                                            value={address.street}
                                         />
                                         <Form.Control.Feedback type='invalid'>Informe a rua</Form.Control.Feedback>
                                     </Form.Group>
@@ -131,6 +158,7 @@ function RegisterAddress() {
                                             name='number'
                                             onChange={handleInputChange}
                                             defaultValue={0}
+                                            value={address.number}
                                         />
                                         <Form.Control.Feedback type='invalid'>Informe o número</Form.Control.Feedback>
                                     </Form.Group>
@@ -142,13 +170,13 @@ function RegisterAddress() {
                                             placeholder='Bairro'
                                             name='neighborhood'
                                             onChange={handleInputChange}
+                                            value={address.neighborhood}
                                         />
                                         <Form.Control.Feedback type='invalid'>Informe o bairro</Form.Control.Feedback>
                                     </Form.Group>
                                     <Form.Group as={Col} md='4'>
                                         <Form.Label>Complemento</Form.Label>
                                         <Form.Control
-                                            required
                                             type='text'
                                             placeholder='Complemento'
                                             name='additionalInfo'
@@ -163,6 +191,7 @@ function RegisterAddress() {
                                             placeholder='Cidade'
                                             name='city'
                                             onChange={handleInputChange}
+                                            value={address.city}
                                         />
                                         <Form.Control.Feedback type='invalid'>Informe a cidade</Form.Control.Feedback>
                                     </Form.Group>
@@ -174,6 +203,7 @@ function RegisterAddress() {
                                             placeholder='Estado'
                                             name='state'
                                             onChange={handleInputChange}
+                                            value={address.state}
                                         />
                                         <Form.Control.Feedback type='invalid'>Informe o estado</Form.Control.Feedback>
                                     </Form.Group>
