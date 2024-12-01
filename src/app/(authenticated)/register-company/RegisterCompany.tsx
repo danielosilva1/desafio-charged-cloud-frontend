@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
-import { CompanyAddressData, CompanyData, CustomError } from '../../../utils/interfaces';
+import { AddressData, CompanyData, CustomError } from '../../../utils/interfaces';
 import { axios } from '../../../config/axios';
 import { AxiosError } from 'axios';
 import InputMask from 'react-input-mask';
@@ -20,7 +20,7 @@ function RegisterCompany() {
         phoneNumber: '',
         addressId: 0
     });
-    const [addresses, setAddresses] = useState<CompanyAddressData[]>([]);
+    const [addresses, setAddresses] = useState<AddressData[]>([]);
 
     // Trata mudanças nas caixas de input
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -176,8 +176,8 @@ function RegisterCompany() {
                             <Form.Select aria-label='Default select example' value={Number(companyData.addressId)} required name='addressId' onChange={handleSelectChange}>
                                 <option></option>
                                 {
-                                    addresses.map((item: CompanyAddressData) => (
-                                        <option key={item.id} value={item.id}>{`${item.street}, ${item.number}, ${item.additionalInfo}, ${item.neighborhood}, ${item.city}, ${item.state}`}</option>
+                                    addresses.map((item: AddressData) => (
+                                        <option key={item.id} value={item.id}>{`${item.street}, ${item.number}, ${item.additionalInfo ? `${item.additionalInfo}, ` : '' } ${item.neighborhood}, ${item.city}, ${item.state}`}</option>
                                     ))
                                 }
                             </Form.Select>

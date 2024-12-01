@@ -1,7 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import './get-companies.css';
 import { Button, Col, Form, Row, Table } from 'react-bootstrap';
-import { CompanyAddressData, GetCompaniesParams } from '../../../utils/interfaces';
+import { CompanyAddressData, CustomError, GetCompaniesParams } from '../../../utils/interfaces';
+import InputMask from 'react-input-mask';
+import axios from 'axios';
+import Swal from 'sweetalert2';
 
 function GetCompanies() {
     const [params, setParams] = useState<GetCompaniesParams>({
@@ -14,13 +17,16 @@ function GetCompanies() {
             cnpj: '',
             name: '',
             phoneNumber: '',
-            cep: '',
-            street: '',
-            neighborhood: '',
-            number: 0,
-            additionalInfo: '',
-            city: '',
-            state: ''
+            address: {
+                id: 0,
+                cep: '',
+                street: '',
+                neighborhood: '',
+                number: 0,
+                additionalInfo: '',
+                city: '',
+                state: ''
+            }
         }
     ]);
 
@@ -38,7 +44,25 @@ function GetCompanies() {
         console.log('Buscar empresas pelos parâmetros:');
         console.log('CNPJ: ' + params.cnpj);
         console.log('Nome: ' + params.name);
+        axios.get('/company/get', { params })
+        .then((response) => {
+            if (response.status == 200) {
+                setFilteredCompanies(response.data);
+                console.log(filteredCompanies)
+            }
+        }).catch((error) => {
+            const err = error.response.data as CustomError;
+
+            Swal.fire({
+                icon: 'error',
+                text: err.msg
+            });
+        });
     }
+
+    useEffect(() => {
+        handleGetCompanies();
+    }, []);
 
     return (
         <>
@@ -46,7 +70,7 @@ function GetCompanies() {
                 <div className='mt-3 mt-md-5 mt-lg-7'>
                     <h3 className='pageTitle'>Buscar empresas</h3>
                 </div>
-                <div className='col-md-6 mt-3 mt-md-5 mt-lg-7 getForm'>
+                <div className='col-md-8 mt-3 mt-md-5 mt-lg-7 getForm'>
                     <Form className='form' noValidate>
                         <Row className='mb-3'>
                             <Form.Group as={Col} md='4'>
@@ -57,6 +81,8 @@ function GetCompanies() {
                                     placeholder='CNPJ'
                                     name='cnpj'
                                     onChange={handleInputChange}
+                                    as={InputMask}
+                                    mask=''
                                 />
                             </Form.Group>
                             <Form.Group as={Col} md='6'>
@@ -76,20 +102,21 @@ function GetCompanies() {
                 </div>
             </div>
             <div className='row justify-content-center align-items-center'>
-                <div className='col-md-12'>
+                <div className='col-md-11'>
                     <Table striped>
                         <thead>
                             <tr>
                                 <th>CNPJ</th>
                                 <th>Nome</th>
                                 <th>Telefone</th>
-                                <th>CEP</th>
+                                <th>Endereço</th>
+                                {/* <th>CEP</th>
                                 <th>Rua</th>
                                 <th>Número</th>
                                 <th>Bairro</th>
                                 <th>Complemento</th>
                                 <th>Cidade</th>
-                                <th>Estado</th>
+                                <th>Estado</th> */}
                             </tr>
                         </thead>
                         <tbody>
@@ -99,13 +126,7 @@ function GetCompanies() {
                                     <td>{item.cnpj}</td>
                                     <td>{item.name}</td>
                                     <td>{item.phoneNumber}</td>
-                                    <td>{item.cep}</td>
-                                    <td>{item.street}</td>
-                                    <td>{item.number}</td>
-                                    <td>{item.neighborhood}</td>
-                                    <td>{item.additionalInfo}</td>
-                                    <td>{item.city}</td>
-                                    <td>{item.state}</td>
+                                    <td>{`${item.address.street}, ${item.address.number}, ${item.address.additionalInfo ? `${item.address.additionalInfo}, ` : '' } ${item.address.neighborhood}, ${item.address.city}, ${item.address.state}`}</td>
                                 </tr>
                                 )
                             ))}
