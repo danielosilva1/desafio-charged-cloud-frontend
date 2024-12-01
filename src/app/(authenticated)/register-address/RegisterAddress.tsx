@@ -1,7 +1,7 @@
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import './register-address.css';
 import React, { useState } from 'react';
-import { AddressData } from '../../../utils/interfaces';
+import { CustomError, AddressData } from '../../../utils/interfaces';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 import ReactInputMask from 'react-input-mask';
@@ -45,18 +45,23 @@ function RegisterAddress() {
         .then((response) => {
             if (response.status == 200) {
                 const address = response.data;
-
-                setAddress({
-                    id: -1, // Endereço ainda não cadastrado
-                    cep: address.cep,
-                    street: address.logradouro,
-                    neighborhood: address.bairro,
-                    number: 0,
-                    additionalInfo: '',
-                    city: address.localidade,
-                    state: address.uf
-                });
-                setShowAddressArea(true);
+                
+                if (address.erro == 'true') {
+                    // CEP não encontrado (definição da api do via CEP)
+                    setShowAddressArea(false);
+                } else {
+                    setAddress({
+                        id: 0,
+                        cep: address.cep,
+                        street: address.logradouro,
+                        neighborhood: address.bairro,
+                        number: 0,
+                        additionalInfo: '',
+                        city: address.localidade,
+                        state: address.uf
+                    });
+                    setShowAddressArea(true);
+                }
             }
         }).catch((error) => {
             setShowAddressArea(false);
@@ -67,29 +72,54 @@ function RegisterAddress() {
     const handleSubmit = (event: any) => {
         const form = event.currentTarget;
 
-        if (form.checkValidity() === false) {
-            event.preventDefault();
-            event.stopPropagation();
-        } else {
-            // TODO
-            event.preventDefault();
-            event.stopPropagation();
+        if (form.checkValidity() !== false) {
             handleRegisterAddress();
         }
+
+        event.preventDefault();
+        event.stopPropagation();
         setValidated(true);
     };
 
+    const handleClear = () => {
+        setValidated(false);
+
+        // Limpa formulário
+        setAddress({
+            id: 0,
+            cep: '',
+            street: '',
+            neighborhood: '',
+            number: 0,
+            additionalInfo: '',
+            city: '',
+            state: ''
+        });
+
+        // Limpa parâmetro de busca
+        setCepParam('');
+    }
+
     const handleRegisterAddress = () => {
-        console.log('Criar endereço com os seguintes dados:');
-        console.log(`
-            CEP: ${address.cep}
-            Rua: ${address.street}
-            Nº: ${address.number}
-            Bairro: ${address.neighborhood}
-            Complemento: ${address.additionalInfo}
-            Cidade: ${address.city}
-            Estado: ${address.state}
-            `);
+        axios.post('/address/create', address)
+        .then((response) => {
+            if (response.status == 201) {
+                Swal.fire({
+                    icon: 'success',
+                    text: 'Endereço cadastrado com sucesso'
+                });
+                handleClear();
+                setShowAddressArea(false);
+            }
+        }).catch((error) => {
+            const err = error.response.data as CustomError;
+
+            Swal.fire({
+                icon: 'error',
+                text: err.msg
+            });
+            console.error(error.message);
+        });
     }
 
     const handleCancel = () => {
@@ -125,6 +155,7 @@ function RegisterAddress() {
                                     onChange={handleInputChange}
                                     as={ReactInputMask}
                                     mask='99999-999'
+                                    value={cepParam}
                                 />
                             </Form.Group>
                             <Form.Group as={Col} md='2' className='d-flex align-items-end'>
@@ -181,6 +212,7 @@ function RegisterAddress() {
                                             placeholder='Complemento'
                                             name='additionalInfo'
                                             onChange={handleInputChange}
+                                            value={address.additionalInfo}
                                         />
                                     </Form.Group>
                                     <Form.Group as={Col} md='4' controlId='validationCustom04'>
