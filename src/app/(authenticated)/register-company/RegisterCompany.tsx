@@ -16,7 +16,7 @@ function RegisterCompany() {
         cnpj: '',
         name: '',
         phoneNumber: '',
-        address: ''
+        addressId: 0
     });
     const [addresses, setAddresses] = useState<CompanyAddressData[]>([]);
 
@@ -43,25 +43,46 @@ function RegisterCompany() {
     const handleSubmit = (event: any) => {
         const form = event.currentTarget;
 
-        if (form.checkValidity() === false) {
-            event.preventDefault();
-            event.stopPropagation();
-        } else {
+        if (form.checkValidity() !== false) {
             handleRegisterCompany();
         }
+
+        event.preventDefault();
+        event.stopPropagation();
         setValidated(true);
     };
 
-    const handleRegisterCompany = () => {
-        Swal.fire({
-            icon: 'info',
-            text: `Cadastrar empresa com os seguintes dados:
-            CNPJ: ${companyData.cnpj}
-            NOME: ${companyData.name}
-            TELEFONE: ${companyData.phoneNumber}
-            ENDEREÇO: ${companyData.address}
-            `
+    const handleClear = () => {
+        // Redefine os campos do formulário  
+        setValidated(false);
+        setCompanyData({
+            id: 0,
+            cnpj: '',
+            name: '',
+            phoneNumber: '',
+            addressId: 0
         });
+    }
+
+    const handleRegisterCompany = () => {
+        axios.post('/company/create', companyData)
+            .then((response) => {
+                if (response.status == 201) {
+                    Swal.fire({
+                        icon: 'success',
+                        text: 'Empresa cadastrada com sucesso'
+                    });
+                }
+                handleClear();
+            }).catch((error: AxiosError) => {
+                const err = error.response?.data as CustomError;
+                
+                Swal.fire({
+                    icon: 'error',
+                    text: err.msg
+                });
+                console.error(error.message);
+            });
     }
 
     const handleCancel = () => {
@@ -79,7 +100,7 @@ function RegisterCompany() {
     }
 
     useEffect(() => {
-        // Carrega todos os endereços cadastrados
+        // Carrega todos os endereços cadastrados e os adiciona à caixa de seleção do formulário
         axios.get('/address/get-all')
             .then((response) => {
                 if (response.status == 200) {
@@ -95,7 +116,7 @@ function RegisterCompany() {
             <div className='mt-3 mt-md-5 mt-lg-7'>
                 <h3 className='pageTitle'>Cadastrar empresa</h3>
             </div>
-            <div className='col-md-6 mt-3 mt-md-5 mt-lg-7 createForm'>
+            <div className='col-md-8 mt-3 mt-md-5 mt-lg-7 createForm'>
                 <Form className='form' noValidate validated={validated} onSubmit={handleSubmit}>
                     <Row className='mb-3'>
                         <Form.Group as={Col} md='3' controlId='validationCustom01'>
@@ -108,6 +129,7 @@ function RegisterCompany() {
                                 onChange={handleInputChange}
                                 as={InputMask}
                                 mask='99.999.999/0009-99'
+                                value={companyData.cnpj}
                             />
                             <Form.Control.Feedback type='invalid'>Informe o CNPJ</Form.Control.Feedback>
                         </Form.Group>
@@ -119,6 +141,7 @@ function RegisterCompany() {
                                 placeholder='Nome'
                                 name='name'
                                 onChange={handleInputChange}
+                                value={companyData.name}
                             />
                             <Form.Control.Feedback type='invalid'>Informe o nome</Form.Control.Feedback>
                         </Form.Group>
@@ -132,13 +155,14 @@ function RegisterCompany() {
                                 onChange={handleInputChange}
                                 as={InputMask}
                                 mask='(99) 99999-9999'
+                                value={companyData.phoneNumber}
                             />
                             <Form.Control.Feedback type='invalid'>Informe o telefone</Form.Control.Feedback>
                         </Form.Group>
                         <Form.Group as={Col} md='11' controlId='validationCustom04'>
                             <Form.Label>Endereço*</Form.Label>
-                            <Form.Select aria-label='Default select example' required name='address' onChange={handleSelectChange}>
-                                <option selected></option>
+                            <Form.Select aria-label='Default select example' value={Number(companyData.addressId)} required name='addressId' onChange={handleSelectChange}>
+                                <option></option>
                                 {
                                     addresses.map((item: CompanyAddressData) => (
                                         <option key={item.id} value={item.id}>{`${item.street}, ${item.number}, ${item.additionalInfo}, ${item.neighborhood}, ${item.city}, ${item.state}`}</option>
@@ -155,7 +179,7 @@ function RegisterCompany() {
                         <Button variant='outline-warning' onClick={handleCancel} className='button'>Cancelar</Button>
                         <Button variant='outline-success' type='submit' className='button'>Cadastrar</Button>
                     </div>
-                </Form>git 
+                </Form>
             </div>
         </div>
     );

@@ -3,7 +3,7 @@ export interface CompanyData {
     cnpj: string,
     name: string,
     phoneNumber: string,
-    address: string
+    addressId: Number
 }
 
 export interface CompanyAddressData {

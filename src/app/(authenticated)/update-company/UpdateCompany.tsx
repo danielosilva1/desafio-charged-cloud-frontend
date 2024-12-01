@@ -13,7 +13,7 @@ function UpdateCompany() {
         cnpj: '',
         name: '',
         phoneNumber: '',
-        address: ''
+        addressId: 0
     });
 
     const handleSelectCnpjChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -76,7 +76,7 @@ function UpdateCompany() {
             Nome: ${companyData.name}
             CNPJ: ${companyData.cnpj}
             Telefone: ${companyData.phoneNumber}
-            Endereço: ${companyData.address}
+            Endereço: ${companyData.addressId}
         `
         );
     }
