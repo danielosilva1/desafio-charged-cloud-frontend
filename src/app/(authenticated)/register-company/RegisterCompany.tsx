@@ -6,6 +6,7 @@ import Swal from 'sweetalert2';
 import { CompanyAddressData, CompanyData, CustomError } from '../../../utils/interfaces';
 import { axios } from '../../../config/axios';
 import { AxiosError } from 'axios';
+import InputMask from 'react-input-mask';
 
 function RegisterCompany() {
     const navigate = useNavigate(); // Navegação entre telas
@@ -80,14 +81,14 @@ function RegisterCompany() {
     useEffect(() => {
         // Carrega todos os endereços cadastrados
         axios.get('/address/get-all')
-        .then((response) => {
-            if (response.status == 200) {
-                setAddresses(response.data);
-            }
-        }).catch((error: AxiosError) => {
-            const err = error.response?.data as CustomError;
-            console.error(err.msg);
-        });
+            .then((response) => {
+                if (response.status == 200) {
+                    setAddresses(response.data);
+                }
+            }).catch((error: AxiosError) => {
+                const err = error.response?.data as CustomError;
+                console.error(err.msg);
+            });
     }, []);
     return (
         <div className='row justify-content-center align-items-center'>
@@ -105,6 +106,8 @@ function RegisterCompany() {
                                 placeholder='CNPJ'
                                 name='cnpj'
                                 onChange={handleInputChange}
+                                as={InputMask}
+                                mask='99.999.999/0009-99'
                             />
                             <Form.Control.Feedback type='invalid'>Informe o CNPJ</Form.Control.Feedback>
                         </Form.Group>
@@ -127,20 +130,22 @@ function RegisterCompany() {
                                 placeholder='Telefone'
                                 name='phoneNumber'
                                 onChange={handleInputChange}
+                                as={InputMask}
+                                mask='(99) 99999-9999'
                             />
                             <Form.Control.Feedback type='invalid'>Informe o telefone</Form.Control.Feedback>
                         </Form.Group>
                         <Form.Group as={Col} md='11' controlId='validationCustom04'>
-                                <Form.Label>Endereço*</Form.Label>
-                                <Form.Select aria-label='Default select example' required name='address' onChange={handleSelectChange}>
-                                    <option selected></option>
-                                    {
-                                        addresses.map((item: CompanyAddressData) => (
-                                            <option key={item.id} value={item.id}>{`${item.street}, ${item.number}, ${item.additionalInfo}, ${item.neighborhood}, ${item.city}, ${item.state}`}</option>
-                                        ))
-                                    }
-                                </Form.Select>
-                                <Form.Control.Feedback type='invalid'>Informe o endereço</Form.Control.Feedback>
+                            <Form.Label>Endereço*</Form.Label>
+                            <Form.Select aria-label='Default select example' required name='address' onChange={handleSelectChange}>
+                                <option selected></option>
+                                {
+                                    addresses.map((item: CompanyAddressData) => (
+                                        <option key={item.id} value={item.id}>{`${item.street}, ${item.number}, ${item.additionalInfo}, ${item.neighborhood}, ${item.city}, ${item.state}`}</option>
+                                    ))
+                                }
+                            </Form.Select>
+                            <Form.Control.Feedback type='invalid'>Informe o endereço</Form.Control.Feedback>
                         </Form.Group>
                         <Form.Group as={Col} md='1' className='d-flex align-items-end'>
                             <Button variant='primary' className='mb-1 ms-2'>+</Button>
@@ -148,10 +153,9 @@ function RegisterCompany() {
                     </Row>
                     <div className='buttonsArea'>
                         <Button variant='outline-warning' onClick={handleCancel} className='button'>Cancelar</Button>
-
                         <Button variant='outline-success' type='submit' className='button'>Cadastrar</Button>
                     </div>
-                </Form>
+                </Form>git 
             </div>
         </div>
     );
