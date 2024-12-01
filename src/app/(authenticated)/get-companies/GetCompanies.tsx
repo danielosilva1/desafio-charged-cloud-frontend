@@ -41,9 +41,6 @@ function GetCompanies() {
     };
 
     const handleGetCompanies = () => {
-        console.log('Buscar empresas pelos parâmetros:');
-        console.log('CNPJ: ' + params.cnpj);
-        console.log('Nome: ' + params.name);
         axios.get('/company/get', { params })
         .then((response) => {
             if (response.status == 200) {

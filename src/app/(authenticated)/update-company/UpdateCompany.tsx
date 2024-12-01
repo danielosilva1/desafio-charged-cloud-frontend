@@ -1,32 +1,41 @@
 import './update-company.css';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Col, Form, Row } from 'react-bootstrap';
-import { CompanyData } from '../../../utils/interfaces';
+import { AddressData, CompanyAddressData, CompanyData } from '../../../utils/interfaces';
 import Swal from 'sweetalert2';
 import InputMask from 'react-input-mask';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowsRotate, faPlus } from '@fortawesome/free-solid-svg-icons';
+import axios from 'axios';
 
 function UpdateCompany() {
     const [validated, setValidated] = useState(false);
     const [cnpjParam, setCnpjParam] = useState('');
     const [showUpdateArea, setShowUpdateArea] = useState(false);
-    const [companyData, setCompanyData] = useState<CompanyData>({
+    const [addresses, setAddresses] = useState<AddressData[]>([]);
+    const [allCompanies, setAllCompanies] = useState<CompanyData[]>([]);
+    const [companyData, setCompanyData] = useState<CompanyAddressData>({
         id: 0,
         cnpj: '',
         name: '',
         phoneNumber: '',
-        addressId: 0
+        address: {
+            id: 0,
+            cep: '',
+            street: '',
+            neighborhood: '',
+            number: 0,
+            additionalInfo: '',
+            city: '',
+            state: ''
+        }
     });
 
     const handleSelectCnpjChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const { value } = event.target;
         setCnpjParam(value);
 
-        // Oculta área de atualização, caso cnpj seja vazio
-        if (value == '') {
-            setShowUpdateArea(false);
-        }
+        setShowUpdateArea(false);
     }
 
     // Trata mudanças nas caixas de input
@@ -43,25 +52,30 @@ function UpdateCompany() {
     const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         // Lógica para lidar com a mudança nos campos de entrada
         const { name, value } = event.target;
+
         setCompanyData((prevState) => ({
             ...prevState,
-            [name]: value,
+            [name]: {id: value},
         }));
     };
 
-    const handleGetCompany = () => {
-        console.log(`Buscar empresa com CNPJ: ${cnpjParam}`);
-        setShowUpdateArea(true);
+    const handleGetCompanyByCnpj = () => {
+        axios.get('/company/get', { params: { cnpj: cnpjParam } })
+        .then((response) => {
+            if (response.status == 200) {
+                setCompanyData(response.data[0]);
+                setShowUpdateArea(true);
+            }
+        }).catch((error) => {
+            setShowUpdateArea(false);
+            console.error(error);
+        });
     }
 
     const handleGoToAddAddress = () => {
         // Abre tela de cadastro de endereço em outra aba
         const url = '/register-address';
         window.open(url, '_blank');
-    }
-
-    const handleGetAllAddresses = () => {
-        console.log('Buscar todos os endereços')
     }
 
     const handleCancel = () => {
@@ -71,15 +85,12 @@ function UpdateCompany() {
     const handleSubmit = (event: any) => {
         const form = event.currentTarget;
 
-        if (form.checkValidity() === false) {
-            event.preventDefault();
-            event.stopPropagation();
-        } else {
-            // TODO
-            event.preventDefault();
-            event.stopPropagation();
+        if (form.checkValidity() !== false) {
             handleUpdateCompany();
         }
+
+        event.preventDefault();
+        event.stopPropagation();
         setValidated(true);
     };
 
@@ -89,7 +100,7 @@ function UpdateCompany() {
             Nome: ${companyData.name}
             CNPJ: ${companyData.cnpj}
             Telefone: ${companyData.phoneNumber}
-            Endereço: ${companyData.addressId}
+            Endereço: ${companyData.address.id}
         `
         );
     }
@@ -108,6 +119,34 @@ function UpdateCompany() {
         });
     }
 
+    const handleGetAllCompanies = () => {
+        axios.get('/company/get')
+        .then((response) => {
+            if (response.status == 200) {
+                setAllCompanies(response.data);
+            }
+        }).catch((error) => {
+            console.error(error);
+        });
+    }
+
+    const handleGetAllAddresses = () => {
+        axios.get('/address/get-all')
+            .then((response) => {
+                if (response.status == 200) {
+                    setAddresses(response.data);
+                }
+            }).catch((error) => {
+                console.error(error);
+            });
+    }
+
+    useEffect(() => {
+        // Carrega CNPJ das empresas cadastradas
+        handleGetAllCompanies();
+        handleGetAllAddresses();
+    }, []);
+
     return (
         <>
             <div className='row justify-content-center align-items-center'>
@@ -121,13 +160,15 @@ function UpdateCompany() {
                                 <Form.Label>CNPJ</Form.Label>
                                 <Form.Select aria-label='Default select example' name='cnpj' onChange={handleSelectCnpjChange}>
                                     <option></option>
-                                    <option value='1'>CNPJ 1</option>
-                                    <option value='2'>CNPJ 2</option>
-                                    <option value='3'>CNPJ 3</option>
+                                    {
+                                        allCompanies.map((item) => (
+                                            <option key={item.id} value={item.cnpj}>{item.cnpj}</option>
+                                        ))
+                                    }
                                 </Form.Select>
                             </Form.Group>
                             <Form.Group as={Col} md='2' className='d-flex align-items-end'>
-                                <Button variant='outline-primary' className='mb-1 ms-2' onClick={handleGetCompany}>Buscar</Button>
+                                <Button variant='outline-primary' className='mb-1 ms-2' onClick={handleGetCompanyByCnpj}>Buscar</Button>
                             </Form.Group>
                         </Row>
                     </Form>
@@ -160,6 +201,7 @@ function UpdateCompany() {
                                         placeholder='Nome'
                                         name='name'
                                         onChange={handleInputChange}
+                                        value={companyData.name}
                                     />
                                     <Form.Control.Feedback type='invalid'>Informe o nome</Form.Control.Feedback>
                                 </Form.Group>
@@ -173,16 +215,19 @@ function UpdateCompany() {
                                         onChange={handleInputChange}
                                         as={InputMask}
                                         mask='(99) 99999-9999'
+                                        value={companyData.phoneNumber}
                                     />
                                     <Form.Control.Feedback type='invalid'>Informe o telefone</Form.Control.Feedback>
                                 </Form.Group>
                                 <Form.Group as={Col} md='10' controlId='validationCustom04'>
                                     <Form.Label>Endereço*</Form.Label>
-                                    <Form.Select aria-label='Default select example' required name='address' onChange={handleSelectChange}>
+                                    <Form.Select aria-label='Default select example' required name='address' onChange={handleSelectChange} value={companyData.address.id}>
                                         <option></option>
-                                        <option value='1'>One</option>
-                                        <option value='2'>Two</option>
-                                        <option value='3'>Three</option>
+                                        {
+                                            addresses.map((item) => (
+                                                <option key={item.id} value={item.id}>{`${item.street}, ${item.number}, ${item.additionalInfo ? `${item.additionalInfo}, ` : ''} ${item.neighborhood}, ${item.city}, ${item.state}`}</option>
+                                            ))
+                                        }
                                     </Form.Select>
                                     <Form.Control.Feedback type='invalid'>Informe o endereço</Form.Control.Feedback>
                                 </Form.Group>
