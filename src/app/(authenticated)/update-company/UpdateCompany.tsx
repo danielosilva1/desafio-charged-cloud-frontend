@@ -108,6 +108,29 @@ function UpdateCompany() {
         setValidated(true);
     };
 
+    const handleClear = () => {
+        setValidated(false);
+
+        setCompanyData({
+            id: 0,
+            cnpj: '',
+            name: '',
+            phoneNumber: '',
+            address: {
+                id: 0,
+                cep: '',
+                street: '',
+                neighborhood: '',
+                number: 0,
+                additionalInfo: '',
+                city: '',
+                state: ''
+            }
+        });
+        setCnpjParam('');
+        setShowUpdateArea(false);
+    }
+
     const handleUpdateCompany = () => {
         axios.patch(`/company/update/${companyData.id}`, {
             cnpj: companyData.cnpj,
@@ -120,6 +143,9 @@ function UpdateCompany() {
                     icon: 'success',
                     text: 'Empresa atualizada com sucesso'
                 });
+                // Atualiza a lista de empresas para atualizar os CNPJ (pode ser que esse dado tenha sido atualizado)
+                handleGetAllCompanies();
+                handleClear();
             }
         }).catch((error) => {
             const err = error.response.data as CustomError;
@@ -135,13 +161,33 @@ function UpdateCompany() {
     const handleDelete = () => {
         Swal.fire({
             icon: 'warning',
-            text: 'Essa ação é irreversível. Você está certo disso?',
+            text: 'Essa ação é irreversível. Está certo disso?',
             showCancelButton: true,
             cancelButtonText: 'Cancelar',
             confirmButtonText: 'Sim, estou!'
         }).then(({ value }) => {
-            if (value == true) {
-                console.log(`Deletar a empresa com id ${companyData.id}`);
+            if (value === true) {
+                axios.delete(`/company/delete/${companyData.id}`)
+                .then((response) => {
+                    if (response.status == 200) {
+                        Swal.fire({
+                            icon: 'success',
+                            text: 'Empresa excluída com sucesso'
+                        });
+                        setShowUpdateArea(false);
+                        setCnpjParam('');
+
+                        // Atualiza a lista de empresas para obter os CNPJ apenas das empresas que continuam no banco
+                        handleGetAllCompanies();
+                    }
+                }).catch((error) => {
+                    const err = error.response.data as CustomError;
+
+                    Swal.fire({
+                        icon: 'error',
+                        text: err.msg
+                    })
+                });
             }
         });
     }
@@ -185,7 +231,7 @@ function UpdateCompany() {
                         <Row className='mb-3'>
                             <Form.Group as={Col} md='7'>
                                 <Form.Label>CNPJ</Form.Label>
-                                <Form.Select aria-label='Default select example' name='cnpj' onChange={handleSelectCnpjChange}>
+                                <Form.Select aria-label='Default select example' name='cnpj' onChange={handleSelectCnpjChange} value={cnpjParam}>
                                     {
                                         allCompanies.map((item) => (
                                             <option key={item.id} value={item.cnpj}>{item.cnpj}</option>
