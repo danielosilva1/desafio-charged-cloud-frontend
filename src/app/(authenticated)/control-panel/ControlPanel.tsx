@@ -38,7 +38,7 @@ function ControlPanel() {
                         </a>
                     </Col>
                     <Col sm={3} className='d-flex justify-content-center'>
-                        <a href='/delete-company' className='panelCard'>
+                        <a href='/update-company' className='panelCard'>
                             <Card style={{ width: '18rem' }}>
                                 <Card.Img variant='top' src='../../../public/delete.jpg' />
                                 <Card.Body>

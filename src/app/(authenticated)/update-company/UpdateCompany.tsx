@@ -224,7 +224,7 @@ function UpdateCompany() {
         <>
             <div className='row justify-content-center align-items-center'>
                 <div className='mt-3 mt-md-5 mt-lg-7'>
-                    <h3 className='pageTitle'>Atualizar empresa</h3>
+                    <h3 className='pageTitle'>Atualizar/excluir empresa</h3>
                 </div>
                 <div className='col-md-8 mt-3 mt-md-5 mt-lg-7 getForm'>
                     <Form className='form' noValidate>
