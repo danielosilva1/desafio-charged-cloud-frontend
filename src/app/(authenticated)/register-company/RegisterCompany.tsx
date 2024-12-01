@@ -96,7 +96,7 @@ function RegisterCompany() {
     const handleCancel = () => {
         Swal.fire({
             icon: 'question',
-            text: 'Você será redirecionado para o painel de controle. Você está certo disso?',
+            text: 'Você será redirecionado para o painel de controle. Está certo disso?',
             showCancelButton: true,
             confirmButtonText: 'Sim, estou!',
             cancelButtonText: 'Cancelar'

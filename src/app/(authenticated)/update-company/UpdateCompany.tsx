@@ -1,14 +1,16 @@
 import './update-company.css';
 import React, { useEffect, useState } from 'react';
 import { Button, Col, Form, Row } from 'react-bootstrap';
-import { AddressData, CompanyAddressData, CompanyData } from '../../../utils/interfaces';
+import { AddressData, CompanyAddressData, CompanyData, CustomError } from '../../../utils/interfaces';
 import Swal from 'sweetalert2';
 import InputMask from 'react-input-mask';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowsRotate, faPlus } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 function UpdateCompany() {
+    const navigate = useNavigate();
     const [validated, setValidated] = useState(false);
     const [cnpjParam, setCnpjParam] = useState('');
     const [showUpdateArea, setShowUpdateArea] = useState(false);
@@ -63,8 +65,10 @@ function UpdateCompany() {
         axios.get('/company/get', { params: { cnpj: cnpjParam } })
         .then((response) => {
             if (response.status == 200) {
-                setCompanyData(response.data[0]);
-                setShowUpdateArea(true);
+                if (response.data.length > 0) {
+                    setCompanyData(response.data[0]);
+                    setShowUpdateArea(true);
+                }
             }
         }).catch((error) => {
             setShowUpdateArea(false);
@@ -79,7 +83,17 @@ function UpdateCompany() {
     }
 
     const handleCancel = () => {
-        setShowUpdateArea(false);
+        Swal.fire({
+            icon: 'question',
+            text: 'Você será redirecionado para o painel de controle. Está certo disso?',
+            showCancelButton: true,
+            confirmButtonText: 'Sim, estou!',
+            cancelButtonText: 'Cancelar'
+        }).then(({ value }) => {
+            if (value == true) {
+                navigate('/control-panel')
+            }
+        });
     }
 
     const handleSubmit = (event: any) => {
@@ -95,14 +109,27 @@ function UpdateCompany() {
     };
 
     const handleUpdateCompany = () => {
-        console.log(`Atualizar os dados da empresa com id: ${companyData.id}`);
-        console.log(`Novos dados:
-            Nome: ${companyData.name}
-            CNPJ: ${companyData.cnpj}
-            Telefone: ${companyData.phoneNumber}
-            Endereço: ${companyData.address.id}
-        `
-        );
+        axios.patch(`/company/update/${companyData.id}`, {
+            cnpj: companyData.cnpj,
+            name: companyData.name,
+            phoneNumber: companyData.phoneNumber,
+            addressId: companyData.address.id
+        }).then((response) => {
+            if (response.status == 200) {
+                Swal.fire({
+                    icon: 'success',
+                    text: 'Empresa atualizada com sucesso'
+                });
+            }
+        }).catch((error) => {
+            const err = error.response.data as CustomError;
+
+            Swal.fire({
+                icon: 'error',
+                text: err.msg
+            });
+            console.log(error);
+        });
     }
 
     const handleDelete = () => {
@@ -159,7 +186,6 @@ function UpdateCompany() {
                             <Form.Group as={Col} md='7'>
                                 <Form.Label>CNPJ</Form.Label>
                                 <Form.Select aria-label='Default select example' name='cnpj' onChange={handleSelectCnpjChange}>
-                                    <option></option>
                                     {
                                         allCompanies.map((item) => (
                                             <option key={item.id} value={item.cnpj}>{item.cnpj}</option>
@@ -241,7 +267,7 @@ function UpdateCompany() {
                             <div className='buttonsArea'>
                                 <Button variant='outline-danger' className='button' onClick={handleDelete}>Excluir</Button>
                                 <Button variant='outline-warning' onClick={handleCancel} className='button'>Cancelar</Button>
-                                <Button variant='outline-success' type='submit' className='button'>Cadastrar</Button>
+                                <Button variant='outline-success' type='submit' className='button'>Salvar</Button>
                             </div>
                         </Form>
                     </div>
