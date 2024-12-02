@@ -16,7 +16,8 @@ Desenvolver uma aplicação web utilizando Nest.js, Vite e MySQL que permita ger
 	- [Especificação completa das histórias de usuário (Trello)](##-A-especificação-das-histórias-de-usuário-e-a-gestão-dos-cards-foram-realizadas-no-trello-e-podem-ser-acessadas-aqui)
 2. [Definição de Protótipo de Telas de Baixa Fidelidade](#Definição-de-Protótipo-de-Telas-de-Baixa-Fidelidade)
 3. [Tecnologias](#Tecnologias)
-4. [Instruções de Instalação e Execução do Projeto Localmente](#Instruções-de-Instalação-e-Execução-Localmente)
+4. [Resultados](#Resultados)
+5. [Instruções de Instalação e Execução do Projeto Localmente](#Instruções-de-Instalação-e-Execução-Localmente)
 
 </br></br>
 # Especificação das Telas por Histórias de Usuário
@@ -130,8 +131,40 @@ para **que ele fique disponível para seleção nas telas de cadastro e atualiza
 - Projeto React com Vite e Typescript;
 - React-Boostrap.
 
+# Resultados
+
+**Executando o código disponível na branch main (com implementação da autenticação) todas as telas (com exceção da inicial, que é pública) mostrarão em algum momento avisos como os das imagens abaixo:**
+
+![alt text](public/erro-busca-empresas.png)
+
+![alt text](public/erro-cadastro-endereco.png)
+
+
+**Desconsiderando a autenticação, a aplicação se comporta assim (versão disponível na branch no-auth):**
+
+![alt text](public/inicio.png)
+
+![alt text](public/painel.png)
+
+![alt text](public/cadastro-empresa.png)
+
+![alt text](public/cadastro-empresa-sucesso.png)
+
+![alt text](public/cadastro-endereco.png)
+
+![alt text](public/cadastro-endereco-sucesso.jpg)
+
+![alt text](public/atualizacao-empresa.png)
+
+![alt text](public/atualizacao-empresa-sucesso.jpg)
+
+![alt text](public/consulta-empresas.png)
+
 <br></br>
 # Instruções de Instalação e Execução Localmente
+
+## Instalando o backend
+1. Acesse o repositório disponível [aqui](https://github.com/danielosilva1/desafio-charged-cloud-backend) e siga as instruções de instalação/execução disponíveis lá
 
 ## Instalando e executando o projeto
 1. Clone o projeto para a sua máquina;
@@ -143,4 +176,5 @@ para **que ele fique disponível para seleção nas telas de cadastro e atualiza
     npm run dev
     ```
 5. Execute o projeto
+
     No navegador, acesse: [http://localhost:8000](http://localhost:8000)
