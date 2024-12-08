@@ -1,5 +1,9 @@
 # Teste Técnico para Vaga na Charged Cloud
 
+## Atualização (07 de dezembro)
+**💡 O problema na integração do login com o Google foi resolvido e está documentado [aqui](https://github.com/danielosilva1/desafio-charged-cloud-frontend/tree/oauth2).**
+
+<br></br>
 ## Objetivo
 Desenvolver uma aplicação web utilizando Nest.js, Vite e MySQL que permita gerenciar (cadastrar, consultar, atualizar e excluir) empresas.
 
