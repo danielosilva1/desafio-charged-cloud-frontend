@@ -7,14 +7,30 @@ import Col from 'react-bootstrap/Col';
 import { Button } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGoogle } from '@fortawesome/free-brands-svg-icons';
-import { axios } from '../../../config/axios';
+import { useEffect } from 'react';
+import { useCookies } from 'react-cookie';
 
 function Home() {
+    const [cookies, setCookie] = useCookies(['access_token']);
+
     const handleLogin = () => {
-        // TODO
-        console.log(`Enviar requisição para ${axios.defaults.baseURL}/auth/google/login`,
-        );
+        // Redireciona página atual para url de login
+        window.location.href = 'http://localhost:3000/api/auth/google/login';
     }
+
+    useEffect(() => {
+        // Obtendo o token enviado no parâmetro de consulta da url pelo backend
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
+
+        if (token) {
+            // Salva token nos cookies
+            setCookie('access_token', token);
+
+            // Redireciona para a página de painel de controle
+            window.location.href = 'http://localhost:8000/control-panel';
+        }
+    }, []);
     return (
         <Container fluid='true' className='vh-100 d-flex flex-column'>
             {/* Linha do Header */}
