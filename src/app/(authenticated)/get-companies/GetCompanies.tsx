@@ -52,13 +52,25 @@ function GetCompanies() {
 
             Swal.fire({
                 icon: 'error',
-                text: err.msg
+                text: err.msg ? err.msg : 'Token de autenticação inválido. Faça login novamente'
             });
         });
     }
 
     useEffect(() => {
-        handleGetCompanies();
+        useEffect(() => {
+            axios.get('/status')
+            .then((response) => {
+                if (response.status == 200) {
+                    // Usuário autenticado: carrega todos as empresas
+                    handleGetCompanies();
+                }
+            }).catch((error) => {
+                // Se um erro for retornado significa que usuário não está autenticado, redireciona para página inicial
+                window.location.href = 'http://localhost:8000';
+                console.error(error.message);
+            });
+        }, []);
     }, []);
 
     return (

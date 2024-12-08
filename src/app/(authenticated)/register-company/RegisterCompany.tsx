@@ -115,13 +115,24 @@ function RegisterCompany() {
                     setAddresses(response.data);
                 }
             }).catch((error: AxiosError) => {
-                const err = error.response?.data as CustomError;
-                console.error(err.msg);
+                console.error(error);
             });
     }
 
     useEffect(() => {
-        handleGetAllAddresses();
+        useEffect(() => {
+            axios.get('/status')
+            .then((response) => {
+                if (response.status == 200) {
+                    // Usuário logado: carrega todos os endereços
+                    handleGetAllAddresses();
+                }
+            }).catch((error) => {
+                // Se um erro for retornado significa que usuário não está autenticado, redireciona para página inicial
+                window.location.href = 'http://localhost:8000';
+                console.error(error.message);
+            });
+        }, []);
     }, []);
     return (
         <div className='row justify-content-center align-items-center'>

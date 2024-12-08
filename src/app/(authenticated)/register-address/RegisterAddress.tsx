@@ -1,6 +1,6 @@
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import './register-address.css';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { CustomError, AddressData } from '../../../utils/interfaces';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
@@ -116,7 +116,7 @@ function RegisterAddress() {
 
             Swal.fire({
                 icon: 'error',
-                text: err.msg
+                text: err.msg ? err.msg : 'Token de autenticação inválido. Faça login novamente'
             });
             console.error(error.message);
         });
@@ -135,6 +135,18 @@ function RegisterAddress() {
             }
         });
     }
+
+    useEffect(() => {
+        axios.get('/status')
+        .then((response) => {
+            console.log('Usuário logado');
+        }).catch((error) => {
+            // Se um erro for retornado significa que usuário não está autenticado, redireciona para página inicial
+            window.location.href = 'http://localhost:8000';
+            console.error(error.message);
+        });
+    }, []);
+
     return (
         <>
             <div className='row justify-content-center align-items-center'>

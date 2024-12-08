@@ -152,7 +152,7 @@ function UpdateCompany() {
 
             Swal.fire({
                 icon: 'error',
-                text: err.msg
+                text: err.msg ? err.msg : 'Token de autenticação inválido. Faça login novamente'
             });
             console.log(error);
         });
@@ -185,7 +185,7 @@ function UpdateCompany() {
 
                     Swal.fire({
                         icon: 'error',
-                        text: err.msg
+                        text: err.msg ? err.msg : 'Token de autenticação inválido. Faça login novamente'
                     })
                 });
             }
@@ -215,9 +215,22 @@ function UpdateCompany() {
     }
 
     useEffect(() => {
-        // Carrega CNPJ das empresas cadastradas
-        handleGetAllCompanies();
-        handleGetAllAddresses();
+        useEffect(() => {
+            useEffect(() => {
+                axios.get('/status')
+                .then((response) => {
+                    if (response.status == 200) {
+                        // Usuário logado: carrega CNPJ das empresas cadastradas e todos os endereços
+                        handleGetAllCompanies();
+                        handleGetAllAddresses();
+                    }
+                }).catch((error) => {
+                    // Se um erro for retornado significa que usuário não está autenticado, redireciona para página inicial
+                    window.location.href = 'http://localhost:8000';
+                    console.error(error.message);
+                });
+            }, []);
+        }, []);
     }, []);
 
     return (
