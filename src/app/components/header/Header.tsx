@@ -2,10 +2,17 @@ import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import { Button, Container, Navbar } from 'react-bootstrap';
+import { useCookies } from 'react-cookie';
 
 const Header : React.FC = () => {
+    const [cookies, setCookie, removeCookie] = useCookies(['access_token']);
+
     const handleLogout = () => {
-        console.log('Logout');
+        // Remove token dos cookies
+        removeCookie('access_token');
+
+        // Redireciona para página inicial
+        window.location.href = 'http://localhost:8000';
     }
     return (
         <Navbar className='bg-body-tertiary'>
