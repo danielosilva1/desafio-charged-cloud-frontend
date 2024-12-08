@@ -5,8 +5,10 @@ import { CompanyAddressData, CustomError, GetCompaniesParams } from '../../../ut
 import InputMask from 'react-input-mask';
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import { useCookies } from 'react-cookie';
 
 function GetCompanies() {
+    const [cookies] = useCookies(['access_token']);
     const [params, setParams] = useState<GetCompaniesParams>({
         cnpj: '',
         name: ''
@@ -41,11 +43,13 @@ function GetCompanies() {
     };
 
     const handleGetCompanies = () => {
-        axios.get('/company/get', { params })
-        .then((response) => {
+        axios.get('/company/get', { params: params,
+            headers: {
+                'Authorization': `Bearer ${cookies['access_token']}`
+            }
+        }).then((response) => {
             if (response.status == 200) {
                 setFilteredCompanies(response.data);
-                console.log(filteredCompanies)
             }
         }).catch((error) => {
             const err = error.response.data as CustomError;
@@ -58,19 +62,20 @@ function GetCompanies() {
     }
 
     useEffect(() => {
-        useEffect(() => {
-            axios.get('/status')
-            .then((response) => {
-                if (response.status == 200) {
-                    // Usuário autenticado: carrega todos as empresas
-                    handleGetCompanies();
-                }
-            }).catch((error) => {
-                // Se um erro for retornado significa que usuário não está autenticado, redireciona para página inicial
-                window.location.href = 'http://localhost:8000';
-                console.error(error.message);
-            });
-        }, []);
+        axios.get('/auth/status', {
+            headers: {
+                'Authorization': `Bearer ${cookies['access_token']}`
+            }
+        }).then((response) => {
+            if (response.status == 200) {
+                // Usuário autenticado: carrega todos as empresas
+                handleGetCompanies();
+            }
+        }).catch((error) => {
+            // Se um erro for retornado significa que usuário não está autenticado, redireciona para página inicial
+            window.location.href = 'http://localhost:8000';
+            console.error(error.message);
+        });
     }, []);
 
     return (

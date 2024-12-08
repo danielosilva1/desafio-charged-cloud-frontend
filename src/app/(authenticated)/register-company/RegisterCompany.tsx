@@ -9,8 +9,10 @@ import { AxiosError } from 'axios';
 import InputMask from 'react-input-mask';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowsRotate, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { useCookies } from 'react-cookie';
 
 function RegisterCompany() {
+    const [cookies] = useCookies(['access_token']);
     const navigate = useNavigate(); // Navegação entre telas
     const [validated, setValidated] = useState(false);
     const [companyData, setCompanyData] = useState<CompanyData>({
@@ -73,24 +75,27 @@ function RegisterCompany() {
     }
 
     const handleRegisterCompany = () => {
-        axios.post('/company/create', companyData)
-            .then((response) => {
-                if (response.status == 201) {
-                    Swal.fire({
-                        icon: 'success',
-                        text: 'Empresa cadastrada com sucesso'
-                    });
-                }
-                handleClear();
-            }).catch((error: AxiosError) => {
-                const err = error.response?.data as CustomError;
-                
+        axios.post('/company/create', companyData, {
+            headers: {
+                'Authorization': `Bearer ${cookies['access_token']}`
+            }
+        }).then((response) => {
+            if (response.status == 201) {
                 Swal.fire({
-                    icon: 'error',
-                    text: err.msg
+                    icon: 'success',
+                    text: 'Empresa cadastrada com sucesso'
                 });
-                console.error(error.message);
+            }
+            handleClear();
+        }).catch((error: AxiosError) => {
+            const err = error.response?.data as CustomError;
+
+            Swal.fire({
+                icon: 'error',
+                text: err.msg
             });
+            console.error(error.message);
+        });
     }
 
     const handleCancel = () => {
@@ -109,30 +114,34 @@ function RegisterCompany() {
 
     const handleGetAllAddresses = () => {
         // Carrega todos os endereços cadastrados e os adiciona à caixa de seleção do formulário
-        axios.get('/address/get-all')
-            .then((response) => {
-                if (response.status == 200) {
-                    setAddresses(response.data);
-                }
-            }).catch((error: AxiosError) => {
-                console.error(error);
-            });
+        axios.get('/address/get-all', {
+            headers: {
+                'Authorization': `Bearer ${cookies['access_token']}`
+            }
+        }).then((response) => {
+            if (response.status == 200) {
+                setAddresses(response.data);
+            }
+        }).catch((error: AxiosError) => {
+            console.error(error);
+        });
     }
 
     useEffect(() => {
-        useEffect(() => {
-            axios.get('/status')
-            .then((response) => {
-                if (response.status == 200) {
-                    // Usuário logado: carrega todos os endereços
-                    handleGetAllAddresses();
-                }
-            }).catch((error) => {
-                // Se um erro for retornado significa que usuário não está autenticado, redireciona para página inicial
-                window.location.href = 'http://localhost:8000';
-                console.error(error.message);
-            });
-        }, []);
+        axios.get('/auth/status', {
+            headers: {
+                'Authorization': `Bearer ${cookies['access_token']}`
+            }
+        }).then((response) => {
+            if (response.status == 200) {
+                // Usuário logado: carrega todos os endereços
+                handleGetAllAddresses();
+            }
+        }).catch((error) => {
+            // Se um erro for retornado significa que usuário não está autenticado, redireciona para página inicial
+            window.location.href = 'http://localhost:8000';
+            console.error(error.message);
+        });
     }, []);
     return (
         <div className='row justify-content-center align-items-center'>
@@ -188,7 +197,7 @@ function RegisterCompany() {
                                 <option></option>
                                 {
                                     addresses.map((item: AddressData) => (
-                                        <option key={item.id} value={item.id}>{`${item.street}, ${item.number}, ${item.additionalInfo ? `${item.additionalInfo}, ` : '' } ${item.neighborhood}, ${item.city}, ${item.state}`}</option>
+                                        <option key={item.id} value={item.id}>{`${item.street}, ${item.number}, ${item.additionalInfo ? `${item.additionalInfo}, ` : ''} ${item.neighborhood}, ${item.city}, ${item.state}`}</option>
                                     ))
                                 }
                             </Form.Select>
