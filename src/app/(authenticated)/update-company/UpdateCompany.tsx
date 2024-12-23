@@ -8,8 +8,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowsRotate, faPlus } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useCookies } from 'react-cookie';
 
 function UpdateCompany() {
+    const [cookies] = useCookies(['access_token']);
     const navigate = useNavigate();
     const [validated, setValidated] = useState(false);
     const [cnpjParam, setCnpjParam] = useState('');
@@ -57,13 +59,19 @@ function UpdateCompany() {
 
         setCompanyData((prevState) => ({
             ...prevState,
-            [name]: {id: value},
+            [name]: { id: value },
         }));
     };
 
     const handleGetCompanyByCnpj = () => {
-        axios.get('/company/get', { params: { cnpj: cnpjParam } })
-        .then((response) => {
+        axios.get('/company/get', {
+            params: {
+                cnpj: cnpjParam,
+                headers: {
+                    'Authorization': `Bearer ${cookies['access_token']}`
+                }
+            }
+        }).then((response) => {
             if (response.status == 200) {
                 if (response.data.length > 0) {
                     setCompanyData(response.data[0]);
@@ -137,6 +145,10 @@ function UpdateCompany() {
             name: companyData.name,
             phoneNumber: companyData.phoneNumber,
             addressId: companyData.address.id
+        }, {
+            headers: {
+                'Authorization': `Bearer ${cookies['access_token']}`
+            }
         }).then((response) => {
             if (response.status == 200) {
                 Swal.fire({
@@ -152,7 +164,7 @@ function UpdateCompany() {
 
             Swal.fire({
                 icon: 'error',
-                text: err.msg
+                text: err.msg ? err.msg : 'Token de autenticação inválido. Faça login novamente'
             });
             console.log(error);
         });
@@ -167,8 +179,11 @@ function UpdateCompany() {
             confirmButtonText: 'Sim, estou!'
         }).then(({ value }) => {
             if (value === true) {
-                axios.delete(`/company/delete/${companyData.id}`)
-                .then((response) => {
+                axios.delete(`/company/delete/${companyData.id}`, {
+                    headers: {
+                        'Authorization': `Bearer ${cookies['access_token']}`
+                    }
+                }).then((response) => {
                     if (response.status == 200) {
                         Swal.fire({
                             icon: 'success',
@@ -185,7 +200,7 @@ function UpdateCompany() {
 
                     Swal.fire({
                         icon: 'error',
-                        text: err.msg
+                        text: err.msg ? err.msg : 'Token de autenticação inválido. Faça login novamente'
                     })
                 });
             }
@@ -193,8 +208,11 @@ function UpdateCompany() {
     }
 
     const handleGetAllCompanies = () => {
-        axios.get('/company/get')
-        .then((response) => {
+        axios.get('/company/get', {
+            headers: {
+                'Authorization': `Bearer ${cookies['access_token']}`
+            }
+        }).then((response) => {
             if (response.status == 200) {
                 setAllCompanies(response.data);
             }
@@ -204,20 +222,35 @@ function UpdateCompany() {
     }
 
     const handleGetAllAddresses = () => {
-        axios.get('/address/get-all')
-            .then((response) => {
-                if (response.status == 200) {
-                    setAddresses(response.data);
-                }
-            }).catch((error) => {
-                console.error(error);
-            });
+        axios.get('/address/get-all', {
+            headers: {
+                'Authorization': `Bearer ${cookies['access_token']}`
+            }
+        }).then((response) => {
+            if (response.status == 200) {
+                setAddresses(response.data);
+            }
+        }).catch((error) => {
+            console.error(error);
+        });
     }
 
     useEffect(() => {
-        // Carrega CNPJ das empresas cadastradas
-        handleGetAllCompanies();
-        handleGetAllAddresses();
+        axios.get('/auth/status', {
+            headers: {
+                'Authorization': `Bearer ${cookies['access_token']}`
+            }
+        }).then((response) => {
+            if (response.status == 200) {
+                // Usuário logado: carrega CNPJ das empresas cadastradas e todos os endereços
+                handleGetAllCompanies();
+                handleGetAllAddresses();
+            }
+        }).catch((error) => {
+            // Se um erro for retornado significa que usuário não está autenticado, redireciona para página inicial
+            window.location.href = 'http://localhost:8000';
+            console.error(error.message);
+        });
     }, []);
 
     return (

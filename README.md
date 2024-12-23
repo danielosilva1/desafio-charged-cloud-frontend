@@ -137,15 +137,6 @@ para **que ele fique disponível para seleção nas telas de cadastro e atualiza
 
 # Resultados
 
-**Executando o código disponível na branch main (com implementação da autenticação) todas as telas (com exceção da inicial, que é pública) mostrarão em algum momento avisos como os das imagens abaixo:**
-
-![alt text](public/erro-busca-empresas.png)
-
-![alt text](public/erro-cadastro-endereco.png)
-
-
-**Desconsiderando a autenticação, a aplicação se comporta assim (versão disponível na branch no-auth):**
-
 ![alt text](public/inicio.png)
 
 ![alt text](public/painel.png)

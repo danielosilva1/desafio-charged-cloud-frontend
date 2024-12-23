@@ -1,13 +1,15 @@
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import './register-address.css';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { CustomError, AddressData } from '../../../utils/interfaces';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 import ReactInputMask from 'react-input-mask';
 import axios from 'axios';
+import { useCookies } from 'react-cookie';
 
 function RegisterAddress() {
+    const [cookies] = useCookies(['access_token']);
     const [validated, setValidated] = useState(false);
     const [cepParam, setCepParam] = useState('');
     const [showAddressArea, setShowAddressArea] = useState(false);
@@ -41,8 +43,11 @@ function RegisterAddress() {
         // Api do via cep espera apenas números: remove hífen
         const cleanedCep = cepParam.replace('-', '');
 
-        axios.get(`https://viacep.com.br/ws/${cleanedCep}/json/`)
-        .then((response) => {
+        axios.get(`https://viacep.com.br/ws/${cleanedCep}/json/`, {
+            headers: {
+                'Authorization': `Bearer ${cookies['access_token']}`
+            }
+        }).then((response) => {
             if (response.status == 200) {
                 const address = response.data;
                 
@@ -101,8 +106,11 @@ function RegisterAddress() {
     }
 
     const handleRegisterAddress = () => {
-        axios.post('/address/create', address)
-        .then((response) => {
+        axios.post('/address/create', address, {
+            headers: {
+                'Authorization': `Bearer ${cookies['access_token']}`
+            }
+        }).then((response) => {
             if (response.status == 201) {
                 Swal.fire({
                     icon: 'success',
@@ -116,7 +124,7 @@ function RegisterAddress() {
 
             Swal.fire({
                 icon: 'error',
-                text: err.msg
+                text: err.msg ? err.msg : 'Token de autenticação inválido. Faça login novamente'
             });
             console.error(error.message);
         });
@@ -135,6 +143,23 @@ function RegisterAddress() {
             }
         });
     }
+
+    useEffect(() => {
+        axios.get('/auth/status', {
+            headers: {
+                'Authorization': `Bearer ${cookies['access_token']}`
+            }
+        }).then((response) => {
+            if (response.status == 200) {
+                console.log('Usuário logado');
+            }
+        }).catch((error) => {
+            // Se um erro for retornado significa que usuário não está autenticado, redireciona para página inicial
+            window.location.href = 'http://localhost:8000';
+            console.error(error.message);
+        });
+    }, []);
+
     return (
         <>
             <div className='row justify-content-center align-items-center'>

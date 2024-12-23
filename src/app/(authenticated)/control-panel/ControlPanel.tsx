@@ -1,7 +1,26 @@
+import { useEffect } from 'react';
 import './control-panel.css';
 import { Card, Col, Container, Row } from 'react-bootstrap';
+import axios from 'axios';
+import { useCookies } from 'react-cookie';
 
 function ControlPanel() {
+    const [cookies] = useCookies(['access_token']);
+
+    useEffect(() => {
+        axios.get('/auth/status', {
+            headers: {
+                'Authorization': `Bearer ${cookies['access_token']}`
+            }
+        }).then((response) => {
+            console.log('Usuário logado');
+        }).catch((error) => {
+            // Se um erro for retornado significa que usuário não está autenticado, redireciona para página inicial
+            window.location.href = 'http://localhost:8000';
+            console.error(error.message);
+        });
+    }, []);
+
     return (
         <>
             <Container fluid='true' className='vh-100 d-flex flex-column'>
